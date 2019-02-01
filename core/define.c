@@ -72,7 +72,9 @@ define_ret fun_add(char *expr, fun_list **head)
     for (int i = 0; i < par_amount; ++i)
         POP_VAR(var_list_head); // Remove from global list
     CLEAR_TOKEN(check);
-    PUSH(*head, add);
+
+    //PUSH(*head, add);
+    fun_to_list(head, add);
     return def_fun;
 }
 

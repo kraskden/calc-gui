@@ -30,9 +30,11 @@ MainWindow::MainWindow(QWidget *parent) :
     root->addLayout(keypad_layot);
     keypad->show();
     create_var_dock(false);
+    create_fun_dock(false);
     connect(ui->actionKeypad, &QAction::triggered, this, &MainWindow::keypad_trigger);
     connect(this->keypad, &Keypad::buttonPressed, this, &MainWindow::keypad_button_pressed);
     connect(ui->actionVariables, &QAction::triggered, this, &MainWindow::vardock_trigger);
+    ui->lineEdit->setFocus();
 }
 
 MainWindow::~MainWindow()
@@ -76,6 +78,8 @@ void MainWindow::calc(const QString &expr)
         break;
     }
     case prs_def_fun: {
+        emit functions_changed();
+        ui->lineEdit->clear();
         break;
     }
     case prs_def_var: {
@@ -160,6 +164,22 @@ void MainWindow::set_def_text()
 void MainWindow::insert_var(const QString &v)
 {
     ui->lineEdit->insert(v);
+    ui->lineEdit->setFocus();
+}
+
+void MainWindow::insert_fun(const QString &f)
+{
+    ui->lineEdit->insert(f);
+    ui->lineEdit->insert("()");
+    ui->lineEdit->cursorBackward(false);
+    ui->lineEdit->setFocus();
+}
+
+void MainWindow::edit_fun(const QString &f)
+{
+    ui->lineEdit->clear();
+    ui->lineEdit->insert(f);
+    ui->lineEdit->setFocus();
 }
 
 void MainWindow::create_var_dock(bool take_focus)
@@ -179,3 +199,19 @@ void MainWindow::create_var_dock(bool take_focus)
         variables->setFocus();
 }
 
+void MainWindow::create_fun_dock(bool take_focus)
+{
+    functions = new GenericDock<UserFunctionListWidget>("MainWindow", QT_TR_NOOP("Functions"), this);
+    functions->setObjectName("FunctionsDock");
+    functions->installEventFilter(this);
+    functions->setAllowedAreas(Qt::AllDockWidgetAreas);
+    // signals + slots
+    connect(this, &MainWindow::functions_changed, functions->widget(), &UserFunctionListWidget::updateList);
+    connect(functions->widget(), &UserFunctionListWidget::userFunctionSelected, this, &MainWindow::insert_fun);
+    connect(functions->widget(), &UserFunctionListWidget::userFunctionEdited, this, &MainWindow::edit_fun);
+    addDockWidget(Qt::LeftDockWidgetArea, functions);
+    functions->show();
+    functions->raise();
+    if (take_focus)
+        functions->setFocus();
+}

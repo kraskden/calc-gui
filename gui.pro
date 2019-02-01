@@ -37,7 +37,8 @@ SOURCES += \
     core/operations.c \
     core/token.c \
     core/var.c \
-    variablelistwidget.cpp
+    variablelistwidget.cpp \
+    userfunctionlistwidget.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -52,7 +53,8 @@ HEADERS += \
     core/token.h \
     core/var.h \
     variablelistwidget.h \
-    genericdock.h
+    genericdock.h \
+    userfunctionlistwidget.h
 
 FORMS += \
         mainwindow.ui

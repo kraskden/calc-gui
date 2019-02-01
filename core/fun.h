@@ -41,4 +41,7 @@ typedef struct fun_list fun_list;
 void fun_init_base(fun_list **head);
 void fun_var_clear(fun_list *head);
 const fun* name_to_fun(const fun_list *head, const char* name);
+void fun_delete(fun_list **head, const char *name);
+void fun_to_list(fun_list **head, fun arg);
+
 #endif

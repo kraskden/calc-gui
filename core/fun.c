@@ -1,4 +1,5 @@
 #include "fun.h"
+#include <stdlib.h>
 
 void fun_init_base(fun_list **head)
 {
@@ -30,6 +31,42 @@ void fun_var_clear(fun_list *head)
     for (; head; head = head->next) {
         if (head->function.type == fun_extended) {
             CLEAR_VAR(head->function.par);
+        }
+    }
+}
+
+void fun_to_list(fun_list **head, fun arg)
+{
+    int is_exist = 0;
+    fun_list *tmp;
+    for (tmp = *head; tmp; tmp = tmp->next) {
+        if ((is_exist = !strcmp(tmp->function.name, arg.name)))
+            break;
+    }
+    if (is_exist) {
+        tmp->function = arg;
+    } else
+        PUSH(*head, arg);
+}
+
+void fun_delete(fun_list **head, const char *name)
+{
+    if (!(*head))
+        return;
+    if (!strcmp((*head)->function.name, name)) {
+        fun_list *to_delete = *head;
+        *head = (*head)->next;
+        free(to_delete);
+        return;
+    }
+    fun_list *prev;
+    fun_list *curr = NULL;
+    for (prev = (*head); prev->next; prev = prev->next) {
+        curr = prev->next;
+        if (!strcmp(curr->function.name, name)) {
+            prev->next = curr->next;
+            free(curr);
+            return;
         }
     }
 }
